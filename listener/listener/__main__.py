@@ -43,7 +43,7 @@ def stt_from_stream(
     with MicrophoneStream(rate=rate, chunk=chunk) as stream:
         audio_generator = stream.generator()
 
-        # Generating transciption with SpeechToText service
+        # Generating transcription with SpeechToText service
         transcription = stt.get_stt_result(audio_generator=audio_generator)
 
         # Now, put the transcription responses to use.
