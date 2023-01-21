@@ -6,6 +6,7 @@ import asyncio
 
 from pydantic import BaseModel, Field, PrivateAttr
 
+
 class MicrophoneStream(BaseModel):
     rate: PrivateAttr(int) = Field(default=16000)
     chunk: PrivateAttr(int) = Field(default=int(rate / 10))
