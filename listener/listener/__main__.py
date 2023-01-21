@@ -7,9 +7,6 @@ from listener.services import SpeechToText, TranscriptorFormatter
 
 app = typer.Typer(name="data-generator")
 
-RATE = 16000
-CHUNK = int(RATE / 10)  # 100ms
-
 
 @app.command()
 def stt_from_stream(
