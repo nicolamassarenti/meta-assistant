@@ -36,9 +36,10 @@ def stt_from_stream(
     :param language_code: the language code of the audio stream
     :return:
     """
-    logger.info("ASD")
+    logger.debug("Received parameters: rate={}, chunk={}, language_code={}".format(rate, chunk, language_code))
     stt = SpeechToText(rate=rate, language_code=language_code)
 
+    logger.info("Opening microphone stream...")
     with MicrophoneStream(rate=rate, chunk=chunk) as stream:
         audio_generator = stream.generator()
 
