@@ -1,7 +1,8 @@
 import typer
 
-from listener.services import SpeechToText, TranscriptorFormatter
+from listener import logger
 from listener.domain import MicrophoneStream
+from listener.services import SpeechToText, TranscriptorFormatter
 
 
 app = typer.Typer(name="data-generator")
@@ -37,8 +38,8 @@ def stt_from_stream(
     :param chunk: the chunk of the audio stream
     :return:
     """
-
-    stt = SpeechToText(rate=rate, language_code=language_code)
+    logger.info("ASD")
+    stt = SpeechToText(rate=rate, language_code=language_code, encoding="LINEAR16")
 
     with MicrophoneStream(rate=rate, chunk=chunk) as stream:
         audio_generator = stream.generator()
@@ -48,3 +49,7 @@ def stt_from_stream(
 
         # Now, put the transcription responses to use.
         TranscriptorFormatter.transcribe(responses=transcription)
+
+
+if __name__ == "__main__":
+    app()

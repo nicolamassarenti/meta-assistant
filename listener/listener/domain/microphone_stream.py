@@ -5,13 +5,17 @@ import pyaudio
 import asyncio
 
 from pydantic import BaseModel, Field, PrivateAttr
+from typing import Any
 
 
 class MicrophoneStream(BaseModel):
-    rate: PrivateAttr(int) = Field(default=16000)
-    chunk: PrivateAttr(int) = Field(default=int(rate / 10))
-    buff: PrivateAttr = Field(default=asyncio.Queue())
+    rate: int = Field(default=16000)
+    chunk: int = Field(default=1600)
+    buff: asyncio.Queue = Field(default=asyncio.Queue())
     closed: bool = Field(default=True)
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def __enter__(self):
         self._audio_interface = pyaudio.PyAudio()
@@ -47,7 +51,7 @@ class MicrophoneStream(BaseModel):
         asyncio.create_task(self._buff.put(in_data))
         return None, pyaudio.paContinue
 
-    def generator(self):
+    async def generator(self):
         while not self.closed:
             # Use a blocking get() to ensure there's at least one chunk of
             # data, and stop iteration if the chunk is None, indicating the

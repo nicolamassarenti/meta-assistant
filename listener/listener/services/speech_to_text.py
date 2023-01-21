@@ -11,6 +11,18 @@ class SpeechToText(BaseModel):
     encoding: speech.RecognitionConfig.AudioEncoding = Field(
         default=speech.RecognitionConfig.AudioEncoding.LINEAR16, description="Encoding"
     )
+    client: speech.SpeechClient = Field(
+        default=speech.SpeechClient(), description="Speech client"
+    )
+    config: speech.RecognitionConfig = Field(
+        default=None, description="Recognition config"
+    )
+    streaming_config: speech.StreamingRecognitionConfig = Field(
+        default=None, description="Streaming recognition config"
+    )
+
+    class Config:
+        arbitrary_types_allowed = True
 
     def __init__(
         self,
@@ -23,15 +35,14 @@ class SpeechToText(BaseModel):
         self.language_code = language_code
         self.encoding = encoding
 
-        self._client = speech.SpeechClient()
-        self._config = speech.RecognitionConfig(
-            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        self.config = speech.RecognitionConfig(
+            encoding=self.encoding,
             sample_rate_hertz=self.rate,
-            language_code=language_code,
+            language_code=self.language_code,
         )
 
-        self._streaming_config = speech.StreamingRecognitionConfig(
-            config=self._config, interim_results=True
+        self.streaming_config = speech.StreamingRecognitionConfig(
+            config=self.config, interim_results=True
         )
 
     def _generate_requests(
@@ -45,7 +56,7 @@ class SpeechToText(BaseModel):
     def _generate_transcription(
         self, requests: List[speech.StreamingRecognizeRequest]
     ) -> List[str]:
-        return self._client.streaming_recognize(self._streaming_config, requests)
+        return self.client.streaming_recognize(self.streaming_config, requests)
 
     def get_stt_result(self, audio_generator) -> speech.StreamingRecognizeResponse:
         # Generating requests
