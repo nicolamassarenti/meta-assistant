@@ -70,7 +70,7 @@ class MicrophoneStream:
                     if chunk is None:
                         return
                     data.append(chunk)
-                except asyncio.QueueEmpty:
+                except queue.Empty:
                     break
 
             yield b"".join(data)
