@@ -3,16 +3,18 @@
 
 import pyaudio
 import asyncio
-
-from pydantic import BaseModel, Field, PrivateAttr
-from typing import Any
+from six.moves import queue
 
 
-class MicrophoneStream(BaseModel):
-    rate: int = Field(default=16000)
-    chunk: int = Field(default=1600)
-    buff: asyncio.Queue = Field(default=asyncio.Queue())
-    closed: bool = Field(default=True)
+class MicrophoneStream:
+    def __init__(self, rate, chunk):
+        self._rate = rate
+        self._chunk = chunk
+        self._audio_interface = None
+        self._audio_stream = None
+
+        self._buff = queue.Queue()
+        self.closed = True
 
     class Config:
         arbitrary_types_allowed = True
@@ -48,15 +50,15 @@ class MicrophoneStream(BaseModel):
 
     def _fill_buffer(self, in_data, frame_count, time_info, status_flags):
         """Continuously collect data from the audio stream, into the buffer."""
-        asyncio.create_task(self._buff.put(in_data))
+        self._buff.put(in_data)
         return None, pyaudio.paContinue
 
-    async def generator(self):
+    def generator(self):
         while not self.closed:
             # Use a blocking get() to ensure there's at least one chunk of
             # data, and stop iteration if the chunk is None, indicating the
             # end of the audio stream.
-            chunk = await self._buff.get()
+            chunk = self._buff.get()
             if chunk is None:
                 return
             data = [chunk]

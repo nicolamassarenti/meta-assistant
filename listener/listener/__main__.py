@@ -36,10 +36,11 @@ def stt_from_stream(
     Opens a microphone stream and sends the audio to the SpeechToText service, which returns a transcription.
     :param rate: the rate of the audio stream
     :param chunk: the chunk of the audio stream
+    :param language_code: the language code of the audio stream
     :return:
     """
     logger.info("ASD")
-    stt = SpeechToText(rate=rate, language_code=language_code, encoding="LINEAR16")
+    stt = SpeechToText(rate=rate, language_code=language_code)
 
     with MicrophoneStream(rate=rate, chunk=chunk) as stream:
         audio_generator = stream.generator()
