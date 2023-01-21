@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "listener"
+version = "0.1.0"
+description = ""
+authors = ["Nicola Massarenti <nicola.massarenti@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^1.10.4"
+typer = {extras = ["all"], version = "^0.7.0"}
+six = "^1.16.0"
+pyaudio = "^0.2.13"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
