@@ -8,6 +8,11 @@ packages = [{include = "text_generator"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+loguru = "^0.6.0"
+fastapi = "^0.89.1"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
+openai = "^0.26.1"
+typer = "^0.7.0"
 
 
 [tool.poetry.group.dev.dependencies]
