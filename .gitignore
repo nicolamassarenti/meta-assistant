@@ -1,6 +1,6 @@
 #custom
 .idea
-
+**/*service-account.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
