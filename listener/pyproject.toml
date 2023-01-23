@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "listener"
+name = "audio-stream"
 version = "0.1.0"
 description = ""
 authors = ["Nicola Massarenti <nicola.massarenti@gmail.com>"]

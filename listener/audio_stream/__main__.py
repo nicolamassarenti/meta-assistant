@@ -1,8 +1,8 @@
 import typer
 
-from listener import logger
-from listener.domain import MicrophoneStream
-from listener.services import SpeechToText, TranscriptorFormatter
+from audio_stream import logger
+from audio_stream.domain import MicrophoneStream
+from audio_stream.services import SpeechToText, TranscriptorFormatter
 
 
 app = typer.Typer(name="data-generator")
