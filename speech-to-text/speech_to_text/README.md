@@ -23,11 +23,11 @@ poetry install
 
 Then, you can run the CLI using:
 ```bash
-poetry run python -m audio_stream
+poetry run python -m speech_to_text
 ```
 Or, as an alternative, if you activated the virtual environment, you can run:
 ```bash
-python -m audio_stream
+python -m speech_to_text
 ```
 
 ### Docker
