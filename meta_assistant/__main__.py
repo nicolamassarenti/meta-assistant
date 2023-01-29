@@ -109,11 +109,11 @@ def run_meta_assistant(
         logger.info("Response: {}".format(response))
 
         # Generate the speech audio from the response
-        audio_syntetized = TextToSpeech.synthesize(text=response)
+        audio_synthesized = TextToSpeech.synthesize(text=response)
 
         # Split the audio into chunks
         audio_chunks, sample_rate = Audio2Chunks.split_audio_to_chunks(
-            audio=audio_syntetized
+            audio=audio_synthesized
         )
 
         # Stream the audio to the Audio2Face plugin
