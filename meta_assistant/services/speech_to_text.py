@@ -27,4 +27,3 @@ class SpeechToText:
 
         for result in response.results:
             return result.alternatives[0].transcript
-

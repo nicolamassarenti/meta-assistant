@@ -22,6 +22,7 @@ openai = "^0.26.4"
 google-cloud-texttospeech = "^2.14.1"
 webrtcvad = "^2.0.10"
 sounddevice = "^0.4.5"
+pydub = "^0.25.1"
 
 
 [tool.poetry.group.dev.dependencies]

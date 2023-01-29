@@ -6,18 +6,20 @@ import threading
 from meta_assistant import logger
 from meta_assistant.domain import MicrophoneStream
 from meta_assistant.services import (
-    VoiceActivityDetection,
     SpeechToText,
     TextGenerator,
     TextToSpeech,
-    Audio2Face
+    Audio2Face,
+    Audio2Chunks,
 )
 
-app = typer.Typer()
+app = typer.Typer(
+    name="meta-assistant",
+    help="An assistant that uses the Text-To-Speech, the Speech-to-Text, and the Generative AI technologies to interact with the user and to stream the audio to the Nvidia Audio2Face plugin.",
+)
 
 # Define a global FIFO queue to store the audio chunks
 audio_chunks = queue.Queue()
-locked = False
 
 
 def microphone_audio_stream(sample_rate: int = 16000, chunk_size: int = 1024):
@@ -26,9 +28,6 @@ def microphone_audio_stream(sample_rate: int = 16000, chunk_size: int = 1024):
     :return:
     """
     logger.info("Opening microphone stream...")
-
-
-
 
 
 @app.command()
@@ -66,45 +65,43 @@ def run_meta_assistant(
     logger.info("grpc_server: {}".format(grpc_server))
 
     # Open a new thread to start recording the audio and to put the audio chunks into the queue a speaker is detected.
-    # threading.Thread(target=microphone_audio_stream, args=(microphone_rate,)).start()
-    speech_audio = None
-    while True:
+    threading.Thread(target=microphone_audio_stream, args=(microphone_rate,)).start()
 
-        # # Get 10 seconds of audio
-        # audio_recording = MicrophoneStream.get_audio_recording(
-        #     sample_rate=microphone_rate, duration=5
-        # )
-        #
-        # # Process the audio recording
-        # text = SpeechToText.transcribe(audio=audio_recording)
-        # logger.info("Transcribed text: {}".format(text))
-        #
-        # # Generate the response
-        # response = TextGenerator.generate(
-        #     key=openai_key,
-        #     model=openai_model,
-        #     input=text,
-        #     instruction=openai_instruction,
-        # )
-        # logger.info("Response: {}".format(response))
+    # Start the main loop
+    while True:
+        audio_recording = MicrophoneStream.get_audio_recording(
+            sample_rate=microphone_rate, duration=5
+        )
+
+        # Process the audio recording
+        text = SpeechToText.transcribe(audio=audio_recording)
+        logger.info("Transcribed text: {}".format(text))
+
+        # Generate the response
+        response = TextGenerator.generate(
+            key=openai_key,
+            model=openai_model,
+            input=text,
+            instruction=openai_instruction,
+        )
+        logger.info("Response: {}".format(response))
 
         # Generate the speech audio from the response
-        if speech_audio is None:
-            speech_audio = TextToSpeech.synthesize(text="Hello, I'm happy to know you and go fuck yourself")
-
-        from meta_assistant.services.streaming import StreamingService
-        import soundfile
-        audio_data, sample_rate = soundfile.read(speech_audio)
-        chunk_size = sample_rate // 10
-        data = [
-            audio_data[i * chunk_size: i * chunk_size + chunk_size]
-            for i in range(len(audio_data) // chunk_size + 1)
-        ]
-        StreamingService.stream_chunk(
-            chunks=data, endpoint=grpc_server, sample_rate=sample_rate, instance_name="/World/audio2face/PlayerStreaming"
+        audio_syntetized = TextToSpeech.synthesize(
+            text=response
         )
-        # Send gRPC request to the audio2face plugin
-        # Audio2Face.send_audio(sample_rate=16000, audio_data=speech_audio, endpoint=grpc_server, instance_name="/World/audio2face/PlayerStreaming")
+
+        # Split the audio into chunks
+        audio_chunks, sample_rate = Audio2Chunks.split_audio_to_chunks(audio=audio_syntetized)
+
+        # Stream the audio to the Audio2Face plugin
+        Audio2Face.stream_chunk(
+            audio=audio_chunks,
+            endpoint=grpc_server,
+            sample_rate=sample_rate,
+            instance_name="/World/audio2face/PlayerStreaming",
+        )
+
 
 if __name__ == "__main__":
     app()

@@ -1,7 +1,7 @@
 import numpy as np
 import grpc
 
-import soundfile
+from typing import List
 
 from meta_assistant import logger
 from meta_assistant.services.grpc import audio2face_pb2, audio2face_pb2_grpc
@@ -9,51 +9,42 @@ from meta_assistant.services.grpc import audio2face_pb2, audio2face_pb2_grpc
 
 class Audio2Face:
     @staticmethod
-    def send_audio(
-        sample_rate: int, audio_data: bytes, endpoint: str, instance_name: str
+    def stream_chunk(
+        sample_rate: int, audio: List[np.ndarray], endpoint: str, instance_name: str
     ):
         """
         Stream a chunk of bytes to the gRPC server
         :return:
         """
+        block_until_playback_is_finished = True
 
-        samplerate = sample_rate
-        url = endpoint
-        import time
-
-        chunk_size = samplerate // 10  # ADJUST
-        sleep_between_chunks = 0.04  # ADJUST
-        block_until_playback_is_finished = True  # ADJUST
-
-        with grpc.insecure_channel(url) as channel:
-            print("Channel creadted")
+        with grpc.insecure_channel(endpoint) as channel:
+            logger.info("Grpc Channel created")
             stub = audio2face_pb2_grpc.Audio2FaceStub(channel)
 
             def make_generator():
                 start_marker = audio2face_pb2.PushAudioRequestStart(
-                    samplerate=samplerate,
+                    samplerate=sample_rate,
                     instance_name=instance_name,
                     block_until_playback_is_finished=block_until_playback_is_finished,
                 )
                 # At first, we send a message with start_marker
                 yield audio2face_pb2.PushAudioStreamRequest(start_marker=start_marker)
                 # Then we send messages with audio_data
-                for i in range(len(audio_data) // chunk_size + 1):
-                    time.sleep(sleep_between_chunks)
-                    chunk = audio_data[i * chunk_size: i * chunk_size + chunk_size]
-                    yield audio2face_pb2.PushAudioStreamRequest(audio_data=chunk.astype(np.float32).tobytes())
+                for _, chunk in enumerate(audio):
+                    yield audio2face_pb2.PushAudioStreamRequest(
+                        audio_data=chunk.astype(np.float32).tobytes()
+                    )
 
             request_generator = make_generator()
-            print("Sending audio data...")
+            logger.debug("Sending audio data to gRPC server...")
             response = stub.PushAudioStream(request_generator)
-            if response.success:
-                print("SUCCESS")
-            else:
-                print(f"ERROR: {response.message}")
-        print("Channel closed")
+            if not response.success:
+                logger.error(f"{response.message}")
+        logger.info("Channel closed")
 
     @staticmethod
-    def send_empty(
+    def stream_zero_padding(
         length: int,
         endpoint: str,
         instance_name: str,
@@ -62,7 +53,7 @@ class Audio2Face:
         Stream a chunk of bytes to the gRPC server
         :return:
         """
-        block_until_playback_is_finished = True  # ADJUST
+        block_until_playback_is_finished = True
 
         with grpc.insecure_channel(endpoint) as channel:
             logger.info("Channel created")

@@ -4,6 +4,12 @@ from google.cloud import texttospeech
 class TextToSpeech:
     @staticmethod
     def synthesize(text: str, language_code: str = "en-US") -> bytes:
+        """
+        Returns the audio file in bytes for the given text and language code
+        :param text: the text to be synthesized
+        :param language_code: the language code
+        :return: the audio file in bytes
+        """
         # Instantiates a client
         client = texttospeech.TextToSpeechClient()
 
@@ -28,36 +34,4 @@ class TextToSpeech:
             input=synthesis_input, voice=voice, audio_config=audio_config
         )
 
-        # Save audio content to file using a temporary file
-        import tempfile
-        # with tempfile.NamedTemporaryFile(suffix=".mp3") as f:
-        #     f.write(response.audio_content)
-        #     f.seek(0)
-        #     mp3_file = f.name
-
-        # Save audio content to file
-        mp3_file = "/home/nicola/Music/output.mp3"
-        with open(mp3_file, "wb") as out:
-            out.write(response.audio_content)
-
-        # Convert the mp3 file to a wav file
-
-        # Convert MP3 to WAV
-        import subprocess
-
-        wav_file="/home/nicola/Music/output.wav"
-        subprocess.call(["rm", wav_file])
-        subprocess.call(["ffmpeg", "-i",mp3_file, wav_file])
-
-        return wav_file
-        # Convert the mp3 file to a wav file
-        import soundfile
-        data, sample_rate = soundfile.read(mp3_file)
-        # import tempfile
-        # with tempfile.NamedTemporaryFile(suffix=".wav") as f:
-        #     soundfile.write(f, data, sample_rate)
-        #     f.seek(0)
-        #     wav_file = f.name
-
-        return wav_file
-
+        return response.audio_content
