@@ -2,6 +2,7 @@ import time
 import typer
 import queue
 import threading
+import sounddevice as sd
 
 from meta_assistant import logger
 from meta_assistant.domain import MicrophoneStream
@@ -19,7 +20,7 @@ app = typer.Typer(
 )
 
 # Define a global FIFO queue to store the audio chunks
-audio_chunks = queue.Queue()
+audio_queue = queue.Queue()
 
 
 def microphone_audio_stream(sample_rate: int = 16000, chunk_size: int = 1024):
@@ -28,6 +29,27 @@ def microphone_audio_stream(sample_rate: int = 16000, chunk_size: int = 1024):
     :return:
     """
     logger.info("Opening microphone stream...")
+
+
+def record_audio(queue: queue.Queue, special_char: str = "q"):
+    """
+    Record audio from the microphone and put the audio chunks into the queue - when the user presses the 'q' key, the
+    recording stops.
+    :param queue: The queue to put the audio chunks into
+    :return:
+    """
+
+    def audio_callback(indata, frames, time, status):
+        queue.put(indata.copy())
+        if queue.qsize() > 25:
+            queue.get()
+
+    with sd.InputStream(callback=audio_callback):
+        while True:
+            input_char = input()
+            if input_char.lower() == special_char:
+                logger.info("Stopping recording - pressed letter {}".format(input_char))
+                break
 
 
 @app.command()
@@ -65,7 +87,7 @@ def run_meta_assistant(
     logger.info("grpc_server: {}".format(grpc_server))
 
     # Open a new thread to start recording the audio and to put the audio chunks into the queue a speaker is detected.
-    threading.Thread(target=microphone_audio_stream, args=(microphone_rate,)).start()
+    threading.Thread(target=record_audio, args=(audio_queue,)).start()
 
     # Start the main loop
     while True:
@@ -87,12 +109,12 @@ def run_meta_assistant(
         logger.info("Response: {}".format(response))
 
         # Generate the speech audio from the response
-        audio_syntetized = TextToSpeech.synthesize(
-            text=response
-        )
+        audio_syntetized = TextToSpeech.synthesize(text=response)
 
         # Split the audio into chunks
-        audio_chunks, sample_rate = Audio2Chunks.split_audio_to_chunks(audio=audio_syntetized)
+        audio_chunks, sample_rate = Audio2Chunks.split_audio_to_chunks(
+            audio=audio_syntetized
+        )
 
         # Stream the audio to the Audio2Face plugin
         Audio2Face.stream_chunk(
