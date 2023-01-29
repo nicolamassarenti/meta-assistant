@@ -90,10 +90,21 @@ def run_meta_assistant(
 
         # Generate the speech audio from the response
         if speech_audio is None:
-            speech_audio = TextToSpeech.synthesize(text="Hello, I'm happy to know you")
+            speech_audio = TextToSpeech.synthesize(text="Hello, I'm happy to know you and go fuck yourself")
 
+        from meta_assistant.services.streaming import StreamingService
+        import soundfile
+        audio_data, sample_rate = soundfile.read(speech_audio)
+        chunk_size = sample_rate // 10
+        data = [
+            audio_data[i * chunk_size: i * chunk_size + chunk_size]
+            for i in range(len(audio_data) // chunk_size + 1)
+        ]
+        StreamingService.stream_chunk(
+            chunks=data, endpoint=grpc_server, sample_rate=sample_rate, instance_name="/World/audio2face/PlayerStreaming"
+        )
         # Send gRPC request to the audio2face plugin
-        Audio2Face.send_audio(sample_rate=16000, chunks=speech_audio, endpoint=grpc_server, instance_name="/World/audio2face/PlayerStreaming")
+        # Audio2Face.send_audio(sample_rate=16000, audio_data=speech_audio, endpoint=grpc_server, instance_name="/World/audio2face/PlayerStreaming")
 
 if __name__ == "__main__":
     app()

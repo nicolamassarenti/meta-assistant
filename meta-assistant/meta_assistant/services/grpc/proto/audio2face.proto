@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package meta_assistant.services.grpc;
+package nvidia.audio2face;
 
 service Audio2Face {
     rpc PushAudio(PushAudioRequest) returns (PushAudioResponse) {}

@@ -5,7 +5,8 @@ import grpc
 from typing import List
 
 from grpc_streaming import logger
-from grpc_streaming.services.grpc import audio2face_pb2, audio2face_pb2_grpc
+from grpc_streaming.services.grpc import audio2face_pb2
+from grpc_streaming.services.grpc import audio2face_pb2_grpc
 
 
 class StreamingService:
