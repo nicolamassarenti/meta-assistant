@@ -28,5 +28,16 @@ def tts_from_text(
     tts_audio = TextToSpeech.get_tts_audio(language_code=language_code, text=text)
 
 
+
+    # Saving the audio file
+    with open("/home/nicola/Music/output.mp3", "wb") as f:
+        f.write(tts_audio)
+
+    # Convert MP3 to WAV
+    import subprocess
+    subprocess.call(["ffmpeg", "-i", "/home/nicola/Music/output.mp3", "/home/nicola/Music/output.wav"])
+
+
+
 if __name__ == "__main__":
     app()
