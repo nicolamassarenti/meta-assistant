@@ -53,18 +53,6 @@ poetry run python -m meta_assistant \
     --openai-instruction=$OPENAI_INSTRUCTION
 ```
 
-### Docker
-TODO
-
-
-### Next steps
-* Stream audio from the microphone
-* Send audio to Google STT via streaming
-* Send text to OpenAI via streaming
-* Send text to Google TTS via streaming
-* Test alternative for TTS with focus on speech audio quality
-* Add a more realistic mesh to the face
-
 
 ### Contributing
 If you want to contribute to this project, please read the [contributing guidelines](CONTRIBUTING.md).
