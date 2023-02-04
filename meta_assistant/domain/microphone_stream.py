@@ -1,5 +1,8 @@
 import queue
 import pyaudio
+import time
+
+from meta_assistant import logger
 
 
 class MicrophoneStream:
@@ -68,12 +71,43 @@ class MicrophoneStream:
         return None, pyaudio.paContinue
 
     @staticmethod
-    def get_audio_recording(sample_rate, duration):
-        """Get audio recording from the microphone"""
+    def get_audio(sample_rate: int, duration: int):
+        """Get audio from the microphone"""
+        import keyboard
+
+        start_time = time.time()
+        logger.info("Opening microphone stream...")
         with MicrophoneStream(sample_rate, chunk=1024) as stream:
             audio_generator = stream.generator()
             frames = []
             for _ in range(int(sample_rate / 1024 * duration)):
+                elapsed_time = time.time() - start_time
+                if elapsed_time > duration:
+                    frames.append(next(audio_generator))
+                    break
+                if input() == "q":  # if key 'q' is pressed
+                    logger.debug("You Pressed A Key!")
+                    frames.append(next(audio_generator))
+                    break  # finishing the loop
+                frames.append(next(audio_generator))
+            audio = b"".join(frames)
+        logger.info("Closing microphone stream...")
+        return audio
+
+    @staticmethod
+    def get_audio_recording(sample_rate: int, duration: int):
+        """Get audio recording from the microphone"""
+        start_time = time.time()
+        with MicrophoneStream(sample_rate, chunk=1024) as stream:
+            audio_generator = stream.generator()
+            frames = []
+            for _ in range(int(sample_rate / 1024 * duration)):
+                elapsed_time = time.time() - start_time
+                if elapsed_time > duration:
+                    break
+                # if keyboard.read_key('q'):  # if key 'q' is pressed
+                #     print('You Pressed A Key!')
+                #     break  # finishing the loop
                 frames.append(next(audio_generator))
             audio_recording = b"".join(frames)
         return audio_recording

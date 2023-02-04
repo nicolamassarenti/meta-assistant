@@ -23,6 +23,7 @@ google-cloud-texttospeech = "^2.14.1"
 webrtcvad = "^2.0.10"
 sounddevice = "^0.4.5"
 pydub = "^0.25.1"
+keyboard = "^0.13.5"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -19,38 +19,6 @@ app = typer.Typer(
     help="An assistant that uses the Text-To-Speech, the Speech-to-Text, and the Generative AI technologies to interact with the user and to stream the audio to the Nvidia Audio2Face plugin.",
 )
 
-# Define a global FIFO queue to store the audio chunks
-audio_queue = queue.Queue()
-
-
-def microphone_audio_stream(sample_rate: int = 16000, chunk_size: int = 1024):
-    """
-    Open a new thread to start recording the audio and to put the audio chunks into the queue a speaker is detected.
-    :return:
-    """
-    logger.info("Opening microphone stream...")
-
-
-def record_audio(queue: queue.Queue, special_char: str = "q"):
-    """
-    Record audio from the microphone and put the audio chunks into the queue - when the user presses the 'q' key, the
-    recording stops.
-    :param queue: The queue to put the audio chunks into
-    :return:
-    """
-
-    def audio_callback(indata, frames, time, status):
-        queue.put(indata.copy())
-        if queue.qsize() > 25:
-            queue.get()
-
-    with sd.InputStream(callback=audio_callback):
-        while True:
-            input_char = input()
-            if input_char.lower() == special_char:
-                logger.info("Stopping recording - pressed letter {}".format(input_char))
-                break
-
 
 @app.command()
 def run_meta_assistant(
@@ -86,15 +54,11 @@ def run_meta_assistant(
     logger.info("openai_instruction: {}".format(openai_instruction))
     logger.info("grpc_server: {}".format(grpc_server))
 
-    # Open a new thread to start recording the audio and to put the audio chunks into the queue a speaker is detected.
-    threading.Thread(target=record_audio, args=(audio_queue,)).start()
-
     # Start the main loop
     while True:
-        audio_recording = MicrophoneStream.get_audio_recording(
-            sample_rate=microphone_rate, duration=5
+        audio_recording = MicrophoneStream.get_audio(
+            sample_rate=microphone_rate, duration=20
         )
-
         # Process the audio recording
         text = SpeechToText.transcribe(audio=audio_recording)
         logger.info("Transcribed text: {}".format(text))
