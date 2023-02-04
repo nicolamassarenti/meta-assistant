@@ -4,15 +4,15 @@ An MVP of a virtual assistant that chats with you.
 
 ## In a nutshell
 
-![meta-assistant]()
+![meta-assistant](https://raw.githubusercontent.com/nicolamassarenti/google-stt-openai-gpt-nvidia-audio2face/main/docs/head.gif?token=GHSAT0AAAAAAB5QRTREWHXNCEY56A273FP2Y664UGA)
 
 This application allows a user to talk and chat with a virtual assistant hosted in Nvidia Audio2Face tool.
 The key features are:
-* Audio recorded in chunks and stopped when the user presses button 'q'
-* Audio is sent to Google Cloud for speech to text conversion
-* Text is sent to OpenAI for text generation
-* Generated text is sent to Google Cloud for Text to Speech conversion
-* Audio is sent via gRPC to Nvidia Audio2Face streaming server
+* **Audio recorded** from the micropghone in chunks and stopped when the user presses button 'q'
+* Audio is sent to Google Cloud for **Speech-To-Text** conversion
+* Text is sent to **OpenAI** for **text generation**
+* Generated text is sent to Google Cloud for **Text-to-Speech** conversion
+* Audio is sent via gRPC to **Nvidia Audio2Face** streaming server
 
 
 ## Setup
@@ -22,7 +22,11 @@ To install the application locally, you need to have poetry installed. Then run 
 poetry install
 ```
 
-To run the application, first you need to run [Nvidia Omniverse Audio2Face](https://developer.nvidia.com/omniverse-audio2face) and then run the following command:
+Before running the application, remember to open [Nvidia Omniverse Audio2Face](https://developer.nvidia.com/omniverse-audio2face) 
+and to activate the streaming gRPC server. You can do it by clicking on `Audio2Face`, then click on `Open Demo Scene` and then on 
+`Full Face Core + Streaming Player`. See image below for reference.
+
+[]()
 ```bash
 ```
 
