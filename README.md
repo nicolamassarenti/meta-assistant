@@ -4,7 +4,7 @@ An MVP of a virtual assistant that chats with you.
 
 ## In a nutshell
 
-![meta-assistant](https://raw.githubusercontent.com/nicolamassarenti/meta-assistant/main/docs/head.gif?token=GHSAT0AAAAAAB5QRTRFZTTZYJX7V3WKMVXOY665EOA)
+![meta-assistant](https://raw.githubusercontent.com/nicolamassarenti/meta-assistant/main/docs/head.gif?token=GHSAT0AAAAAAB5QRTRECJOSENHODSZ2CE32Y665SDQ)
 
 This application allows a user to talk and chat with a virtual assistant hosted in Nvidia Audio2Face tool.
 The key features are:
@@ -14,7 +14,7 @@ The key features are:
 * Generated text is sent to Google Cloud for **Text-to-Speech** conversion
 * Audio is sent via gRPC to **Nvidia Audio2Face** streaming server
 
-
+    
 ## Setup
 ### Local development
 To install the application locally, you need to have [poetry](python-poetry.org) installed. To install the dependencies, run the following command:
