@@ -4,7 +4,7 @@ An MVP of a virtual assistant that chats with you.
 
 ## In a nutshell
 
-![meta-assistant](https://raw.githubusercontent.com/nicolamassarenti/meta-assistant/main/docs/head.gif?token=GHSAT0AAAAAAB5QRTRFZTTZYJX7V3WKMVXOY665EOA)
+![meta-assistant](https://raw.githubusercontent.com/nicolamassarenti/meta-assistant/main/docs/head.gif)
 
 This application allows a user to talk and chat with a virtual assistant hosted in Nvidia Audio2Face tool.
 The key features are:
@@ -26,7 +26,7 @@ Before running the application, remember to open [Nvidia Omniverse Audio2Face](h
 and to activate the streaming gRPC server. You can do it by clicking on `Audio2Face`, then click on `Open Demo Scene` and then on 
 `Full Face Core + Streaming Player`. See image below for reference.
 
-![](https://raw.githubusercontent.com/nicolamassarenti/meta-assistant/main/docs/a2f-streaming-setup.png?token=GHSAT0AAAAAAB5QRTREWCEX24FZPILQHW7SY665ECA)
+![](https://raw.githubusercontent.com/nicolamassarenti/meta-assistant/main/docs/a2f-streaming-setup.png)
 
 In addition, you have to have a Google Cloud account and a Google Cloud project with the following APIs enabled:
 - Google Speech-to-Text API
