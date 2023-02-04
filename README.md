@@ -17,7 +17,7 @@ The key features are:
 
 ## Setup
 ### Local development
-To install the application locally, you need to have poetry installed. Then run the following commands:
+To install the application locally, you need to have [poetry](python-poetry.org) installed. To install the dependencies, run the following command:
 ```bash
 poetry install
 ```
@@ -26,8 +26,31 @@ Before running the application, remember to open [Nvidia Omniverse Audio2Face](h
 and to activate the streaming gRPC server. You can do it by clicking on `Audio2Face`, then click on `Open Demo Scene` and then on 
 `Full Face Core + Streaming Player`. See image below for reference.
 
-[]()
+![](https://raw.githubusercontent.com/nicolamassarenti/google-stt-openai-gpt-nvidia-audio2face/main/docs/a2f-streaming-setup.png?token=GHSAT0AAAAAAB5QRTRFLZZRVF2ZCLXIMJ4EY6642YQ)
+
+In addition, you have to have a Google Cloud account and a Google Cloud project with the following APIs enabled:
+- Google Speech-to-Text API
+- Google Text-to-Speech API
+
+Then, you have to create a service account and download the JSON key file. 
+
+You also have to have a valid OpenAI API key.
+
+Finally, you have to set the following environment variables:
 ```bash
+GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account.json"
+OPENAI_KEY="your-openai-key"
+OPENAI_MODEL="text-davinci-003" # or any other model you want to use
+```
+
+Then, you're ready to run the application:
+```bash
+GRPC_SERVER="localhost:50051"
+OPENAI_INSTRUCTION="answer to this sentence like you are chatting with a friend"
+
+poetry run python -m meta_assistant \
+    --grpc-server=$GRPC_SERVER \
+    --openai-instruction=$OPENAI_INSTRUCTION
 ```
 
 ### Docker
@@ -40,14 +63,14 @@ TODO
 * Send text to OpenAI via streaming
 * Send text to Google TTS via streaming
 * Test alternative for TTS with focus on speech audio quality
-
+* Add a more realistic mesh to the face
 
 
 ### Contributing
 If you want to contribute to this project, please read the [contributing guidelines](CONTRIBUTING.md).
 
 ### License
-This project is licensed under the terms of the [MIT license](LICENSE).
+This project is licensed under the terms of the MIT license.
 
 ### Authors
 * [Nicola Massarenti](nicolamassarenti.com)
