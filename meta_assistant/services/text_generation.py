@@ -10,7 +10,7 @@ class TextGenerator:
         prompt = input + ". - " + instruction
         logger.debug("Prompt: {}".format(prompt))
         response = openai.Completion.create(
-            model=model, prompt=prompt, best_of=1, max_tokens=30
+            model=model, prompt=prompt, best_of=1, max_tokens=50
         )
 
         return response["choices"][0]["text"]
